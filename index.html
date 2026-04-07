@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Operations & Data Management Portfolio</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f4f6f8; margin:0; }
+.container { max-width:900px; margin:30px auto; background:white; padding:20px; border-radius:10px; }
+h1 { text-align:center; }
+form { display:grid; gap:10px; margin-bottom:15px; }
+input, select, button { padding:10px; font-size:14px; }
+button { background:#007bff; color:white; border:none; cursor:pointer; }
+table { width:100%; border-collapse:collapse; margin-top:15px; }
+th, td { border:1px solid #ddd; padding:8px; }
+th { background:#007bff; color:white; }
+#search { margin-top:10px; }
+.summary { margin-top:10px; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>Operations & Data Management Demo</h1>
+
+<form id="form">
+<input type="text" id="name" placeholder="Client/Customer Name" required>
+<input type="email" id="email" placeholder="Email" required>
+<select id="status">
+<option>New</option>
+<option>In Progress</option>
+<option>Completed</option>
+</select>
+<input type="text" id="notes" placeholder="Notes / Details">
+<button type="submit">Add Record</button>
+</form>
+
+<input type="text" id="search" placeholder="Search records...">
+
+<table>
+<thead>
+<tr><th>Name</th><th>Email</th><th>Status</th><th>Notes</th><th>Action</th></tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+<div class="summary" id="summary"></div>
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("data")) || [];
+const form=document.getElementById("form"), table=document.getElementById("table"),
+search=document.getElementById("search"), summary=document.getElementById("summary");
+
+function display(records){
+ table.innerHTML="";
+ records.forEach((item,i)=>{ table.innerHTML+=`<tr>
+<td>${item.name}</td><td>${item.email}</td><td>${item.status}</td><td>${item.notes}</td>
+<td><button onclick="remove(${i})">Delete</button></td></tr>`; });
+ summary.innerText="Total Records: "+records.length;
+}
+form.onsubmit=(e)=>{
+ e.preventDefault();
+ const entry={ name:name.value,email:email.value,status:status.value,notes:notes.value };
+ data.push(entry);
+ localStorage.setItem("data",JSON.stringify(data));
+ form.reset(); display(data);
+};
+function remove(i){ data.splice(i,1); localStorage.setItem("data",JSON.stringify(data)); display(data);}
+search.oninput=()=>{ const value=search.value.toLowerCase();
+ display(data.filter(d=>d.name.toLowerCase().includes(value)||d.email.toLowerCase().includes(value)));
+};
+display(data);
+</script>
+
+</body>
+</html>
